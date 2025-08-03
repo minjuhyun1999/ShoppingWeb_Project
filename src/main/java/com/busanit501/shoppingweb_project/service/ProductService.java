@@ -32,6 +32,9 @@ public interface ProductService {
 
 
 
+    ProductDTO createProduct(ProductDTO productDTO);
+
+
     // 새 상품 등록 메서드 시그니처 추가
     // 상품 수정 메서드 시그니처 추가 (이미지 처리 포함)
     void updateProductWithImages(Long productId, String productName, BigDecimal price, int stock, ProductCategory productTag,

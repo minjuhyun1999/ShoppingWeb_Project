@@ -44,8 +44,6 @@ public class ProductServiceImpl implements ProductService {
         ProductDTO productDTO =  Product.entityToDTO(product);
         log.info("ProductService 에서 작업중 productDTO.thumbnailFileName : " + productDTO.getThumbnailFileName());
         log.info("ProductService 에서 작업중 productDTO.FileName : " + productDTO.getFileNames());
-        log.info("ProductService 에서 작업중 productDTO.avgRate : " + product.getAvgRate());
-
         // 썸네일 이미지 설정
         productImageRepository.findByProduct_ProductIdAndThumbnail(product.getProductId(), true)
                 .ifPresent(productImage -> productDTO.setImageFileName(productImage.getFileName()));
@@ -95,7 +93,12 @@ public class ProductServiceImpl implements ProductService {
         if (productDTO.getProductTag() == null) {
             productDTO.setProductTag(ProductCategory.UNKNOWN);
         }
-        Product product = productRepository.findByProductId(productDTO.getProductId());
+        Product product = Product.builder()
+                .productName(productDTO.getProductName())
+                .price(productDTO.getPrice())
+                .stock(productDTO.getStock())
+                .productTag(productDTO.getProductTag())
+                .build();
         Product savedProduct = productRepository.save(product);
         return Product.entityToDTO(savedProduct);
     }
