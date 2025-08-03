@@ -27,14 +27,10 @@ public class ProductDTO {
     private BigDecimal price;
     private int stock;
     private ProductCategory productTag;
-    private double avgRate;
-    private int rateCount;
     private String thumbnailFileName; // 이미지 파일 이름 담을 필드 추가
 
     private List<String> fileNames;
     private ProductStatus status;
-    private double avgRate;
-    private int rateCount;
 
     public void setImageFileName(String fileName)
     {

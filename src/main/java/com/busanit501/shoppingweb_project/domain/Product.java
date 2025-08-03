@@ -26,9 +26,6 @@ public class Product {
     private String productName;
     private BigDecimal price;
     private int stock;
-    private double avgRate;
-    private int rateCount=0;
-
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private ProductStatus status = ProductStatus.ACTIVE;
@@ -118,17 +115,8 @@ public class Product {
                 .productTag(product.getProductTag())
                 .thumbnailFileName(thumbnailFileName)
                 .fileNames(detailFileNames)
-                .avgRate(product.getAvgRate())
-                .rateCount(product.getRateCount())
                 .status(product.getStatus())
                 .build();
-    }
-
-    public void addReview(int rate)
-    {
-        avgRate = (avgRate * rateCount) + rate;
-        rateCount++;
-        avgRate /= rateCount;
     }
 
 
