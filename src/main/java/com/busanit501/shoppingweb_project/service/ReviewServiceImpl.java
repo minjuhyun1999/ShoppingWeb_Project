@@ -52,7 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         review.setProduct(product);
         review.setMember(member);
-        product.addReview(dto.getRating());
+        product.addReview(review);
 
         reviewRepository.save(review);
     }
