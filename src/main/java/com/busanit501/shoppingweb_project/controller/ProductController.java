@@ -89,7 +89,8 @@ public ResponseEntity<?> createProduct(
             @RequestParam(value = "deleteImages", required = false) String deleteImagesJson) {
 
         productService.updateProductWithImages(productId, productName, price, stock, productTag, thumbnail, details, deleteImagesJson);
-        return ResponseEntity.ok().build();
+        ProductDTO updatedProduct = productService.getProductById(productId);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/{productId}")
