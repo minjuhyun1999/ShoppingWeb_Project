@@ -20,6 +20,9 @@ public interface ProductService {
     // 전체 목록 조회
     List<ProductDTO> getAllProducts();
 
+    // 관리자용 전체 목록 조회
+    List<ProductDTO> getAllProductsForAdmin();
+
     // 카테고리별 조회
     List<ProductDTO> getProductsByCategory(String category);
 

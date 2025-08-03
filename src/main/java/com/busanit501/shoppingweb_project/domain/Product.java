@@ -1,6 +1,7 @@
 package com.busanit501.shoppingweb_project.domain;
 
 import com.busanit501.shoppingweb_project.domain.enums.ProductCategory;
+import com.busanit501.shoppingweb_project.domain.enums.ProductStatus;
 import com.busanit501.shoppingweb_project.dto.ProductDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -27,6 +28,10 @@ public class Product {
     private int stock;
     private double avgRate;
     private int rateCount=0;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ProductStatus status = ProductStatus.ACTIVE;
 
     @OneToMany(mappedBy = "product" , cascade = {CascadeType.ALL}
     , fetch = FetchType.LAZY,
@@ -85,6 +90,10 @@ public class Product {
         this.productTag = productDTO.getProductTag();
     }
 
+    public void setStatus(ProductStatus status) {
+        this.status = status;
+    }
+
     public Optional<ProductImage> getThumbnailImage(){
         return imageSet.stream()
                 .filter(ProductImage::isThumbnail)
@@ -111,6 +120,7 @@ public class Product {
                 .fileNames(detailFileNames)
                 .avgRate(product.getAvgRate())
                 .rateCount(product.getRateCount())
+                .status(product.getStatus())
                 .build();
     }
 

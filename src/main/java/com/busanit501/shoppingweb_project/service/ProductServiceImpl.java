@@ -2,8 +2,8 @@ package com.busanit501.shoppingweb_project.service;
 
 import com.busanit501.shoppingweb_project.domain.Product;
 import com.busanit501.shoppingweb_project.domain.ProductImage;
-import com.busanit501.shoppingweb_project.domain.Review;
 import com.busanit501.shoppingweb_project.domain.enums.ProductCategory;
+import com.busanit501.shoppingweb_project.domain.enums.ProductStatus;
 import com.busanit501.shoppingweb_project.dto.ProductDTO;
 import com.busanit501.shoppingweb_project.repository.ProductRepository;
 import com.busanit501.shoppingweb_project.repository.ProductImageRepository;
@@ -55,19 +55,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDTO> getAllProducts() {
-        log.info("ProductService - getAllProducts 호출");
+        log.info("ProductService - getAllProducts 호출 (ACTIVE 상품만)");
+        List<Product> products = productRepository.findByStatus(ProductStatus.ACTIVE);
+        return products.stream()
+                .map(this::mapProductToDtoWithImage)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> getAllProductsForAdmin() {
+        log.info("ProductService - getAllProductsForAdmin 호출 (모든 상품)");
         List<Product> products = productRepository.findAll();
         return products.stream()
                 .map(this::mapProductToDtoWithImage)
                 .collect(Collectors.toList());
-
     }
 
     @Override
     public List<ProductDTO> getProductsByCategory(String category) {
         log.info("ProductService - getProductsByCategory: " + category);
         ProductCategory productCategory = ProductCategory.fromKoreanName(category);
-        List<Product> products = productRepository.findByProductTag(productCategory);
+        List<Product> products = productRepository.findByProductTagAndStatus(productCategory, ProductStatus.ACTIVE);
         return products.stream()
                 .map(this::mapProductToDtoWithImage)
                 .collect(Collectors.toList());
@@ -76,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> searchProducts(String keyword) {
         log.info("ProductService - searchProducts: " + keyword);
-        List<Product> products = productRepository.searchByKeyword(keyword);
+        List<Product> products = productRepository.searchByKeywordAndStatus(keyword, ProductStatus.ACTIVE);
         return products.stream()
                 .map(this::mapProductToDtoWithImage)
                 .collect(Collectors.toList());
@@ -168,10 +176,13 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
-    // 상품 삭제 메서드 구현
+    // 상품 삭제 메서드 구현 (Soft Delete)
     @Override
     public void deleteProduct(Long productId) {
-        productRepository.deleteById(productId);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품이 없습니다. id=" + productId));
+        product.setStatus(ProductStatus.INACTIVE);
+        productRepository.save(product);
     }
 
     @Override

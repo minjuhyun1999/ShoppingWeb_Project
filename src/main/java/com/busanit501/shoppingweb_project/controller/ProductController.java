@@ -26,7 +26,13 @@ public class ProductController {
 
     @GetMapping // 화면에 렌더링 될 때 category를 선택하지 않으면 모든 상품을 불러오고
     // category를 선택하면 category에 해당 되는 상품만 불러온다.
-    public List<ProductDTO> getAllProducts(@RequestParam(required = false) String category) {
+    public List<ProductDTO> getAllProducts(@RequestParam(required = false) String category,
+                                           @RequestParam(defaultValue = "false") boolean forAdmin) {
+        if (forAdmin) {
+            log.info("관리자용 모든 상품 데이터를 불러옵니다.");
+            return productService.getAllProductsForAdmin();
+        }
+
         if(category != null && !category.isBlank()){
             log.info(category + "데이터를 불러옵니다.");
             return productService.getProductsByCategory(category);

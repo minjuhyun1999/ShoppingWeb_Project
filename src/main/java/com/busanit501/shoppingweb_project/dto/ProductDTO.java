@@ -2,6 +2,7 @@ package com.busanit501.shoppingweb_project.dto;
 
 import com.busanit501.shoppingweb_project.domain.Product;
 import com.busanit501.shoppingweb_project.domain.enums.ProductCategory;
+import com.busanit501.shoppingweb_project.domain.enums.ProductStatus;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,9 @@ public class ProductDTO {
     private String thumbnailFileName; // 이미지 파일 이름 담을 필드 추가
 
     private List<String> fileNames;
+    private ProductStatus status;
+    private double avgRate;
+    private int rateCount;
 
     public void setImageFileName(String fileName)
     {
