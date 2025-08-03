@@ -40,4 +40,16 @@ public class FileUploadService {
     private String extractUUID(String fileName){
         return fileName.substring(0, fileName.lastIndexOf('.'));
     }
+
+    public void deleteFile(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return;
+        }
+        try {
+            Path filePath = Paths.get(UPLOAD_DIR, fileName);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("파일 삭제 실패: " + fileName, e);
+        }
+    }
 }

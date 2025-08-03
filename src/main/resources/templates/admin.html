@@ -1,338 +1,512 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <title>관리자 페이지 - 상품 관리</title>
-    <!-- 부트스트랩 CSS 불러오기 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        header {
-            background-color: #343a40;
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            border-radius: 6px;
-        }
-        header h1 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 1.6rem;
-        }
-        header button {
-            min-width: 100px;
-            margin-left: 10px;
-        }
-        main {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
-        }
-        table th {
-            background-color: #007bff;
-            color: white;
-        }
-        table td input, table td select {
-            width: 100%;
-        }
-        h2 {
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        #addProductForm label {
-            font-weight: 500;
-        }
-        #addProductForm button {
-            width: 150px;
-            font-weight: 600;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>관리자 페이지 - 상품 관리</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+font-family: 'Poppins', sans-serif;
+background-color: #f0f2f5; /* 더 밝은 배경 */
+color: #333;
+}
+header {
+background-color: #28a745; /* 초록색 헤더 */
+color: white;
+padding: 20px 0;
+margin-bottom: 30px;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding-left: 20px;
+padding-right: 20px;
+}
+header h1 {
+margin: 0;
+font-weight: 700;
+font-size: 1.8rem;
+}
+header .btn {
+min-width: 100px;
+margin-left: 10px;
+border-radius: 5px;
+font-weight: 500;
+}
+main {
+background-color: white;
+padding: 30px;
+border-radius: 10px;
+box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+h2 {
+margin-bottom: 25px;
+font-weight: 600;
+color: #007bff; /* 파란색 제목 */
+border-bottom: 2px solid #eee;
+padding-bottom: 10px;
+}
+table th {
+background-color: #007bff;
+color: white;
+font-weight: 600;
+vertical-align: middle;
+}
+table td {
+vertical-align: middle;
+padding: 12px 8px;
+}
+/* 입력 필드 기본 스타일 */
+table td input, table td select {
+border: 1px solid #ddd;
+border-radius: 4px;
+padding: 8px;
+transition: all 0.3s ease;
+}
+/* 입력 필드 포커스 스타일 */
+table td input:focus, table td select:focus {
+border-color: #007bff;
+box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+/* 읽기 전용/비활성화된 입력 필드 스타일 */
+.form-control[readonly], .form-select[disabled], input[type="file"][disabled] {
+background-color: #e9ecef; /* 배경색 변경 */
+cursor: not-allowed; /* 커서 변경 */
+}
+.table-hover tbody tr:hover {
+background-color: #e9ecef;
+cursor: pointer; /* 클릭 가능한 행임을 나타냄 */
+}
+#productForm label {
+font-weight: 500;
+margin-bottom: 8px;
+color: #555;
+}
+#productForm .form-control, #productForm .form-select {
+border-radius: 5px;
+padding: 10px 12px;
+border: 1px solid #ced4da;
+}
+#productForm .form-buttons { /* 버튼 그룹의 새로운 클래스 */
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+#productForm .form-buttons button {
+font-weight: 600;
+padding: 10px;
+border-radius: 5px;
+transition: background-color 0.3s ease;
+}
+/* "등록" 또는 "수정 저장" 버튼 스타일 */
+#productForm .form-buttons #submitButton {
+background-color: #28a745;
+border-color: #28a745;
+width: 180px;
+}
+#productForm .form-buttons #submitButton:hover {
+background-color: #218838;
+border-color: #1e7e34;
+}
+
+/* 이미지 미리보기 컨테이너 */
+.image-preview-container {
+display: flex;
+flex-wrap: wrap;
+gap: 15px;
+margin-top: 15px;
+border: 1px dashed #ced4da;
+padding: 15px;
+border-radius: 8px;
+min-height: 100px;
+align-items: center;
+justify-content: center;
+font-style: italic;
+color: #6c757d;
+}
+.image-preview-container img {
+max-width: 100px;
+max-height: 100px;
+border-radius: 5px;
+border: 1px solid #ddd;
+object-fit: cover;
+position: relative;
+}
+.image-preview-wrapper {
+position: relative;
+display: inline-block;
+}
+.image-preview-wrapper .delete-image {
+position: absolute;
+top: -8px;
+right: -8px;
+background-color: #dc3545;
+color: white;
+border-radius: 50%;
+width: 20px;
+height: 20px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 0.8rem;
+cursor: pointer;
+border: 1px solid white;
+z-index: 10; /* 다른 요소 위에 표시 */
+}
+/* 미리보기 삭제 버튼 비활성화 상태 */
+.image-preview-wrapper .delete-image.disabled-delete {
+opacity: 0.5;
+cursor: not-allowed;
+}
+</style>
 </head>
 
 <body>
 <header class="container mt-3 mb-3">
-    <h1>관리자 상품 관리</h1>
-    <!-- 홈으로 가기 버튼 -->
-    <button onclick="goHome()" class="btn btn-secondary">홈으로</button>
-    <!-- 로그아웃 버튼 -->
-    <button onclick="logout()" class="btn btn-danger">로그아웃</button>
+<h1>관리자 상품 관리</h1>
+<div>
+<button onclick="goHome()" class="btn btn-light">홈으로</button>
+<button onclick="logout()" class="btn btn-warning">로그아웃</button>
+</div>
 </header>
 
 <main class="container">
-    <h2>상품 목록</h2>
-    <!-- 상품 리스트를 보여줄 테이블 -->
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>상품명</th>
-            <th>가격</th>
-            <th>재고</th>
-            <th>카테고리</th>
-            <th>수정</th>
-            <th>삭제</th>
-        </tr>
-        </thead>
-        <!-- 자바스크립트에서 동적으로 생성될 상품 행들 -->
-        <tbody id="productTableBody"></tbody>
-    </table>
+<h2>상품 목록</h2>
+<table class="table table-bordered table-hover">
+<thead>
+<tr>
+<th>ID</th>
+<th>상품명</th>
+<th>가격</th>
+<th>재고</th>
+<th>카테고리</th>
+</tr>
+</thead>
+<tbody id="productTableBody"></tbody>
+</table>
 
-    <h2>새 상품 등록</h2>
-    <!-- 새 상품 등록 폼 (파일 첨부 가능하도록 enctype 설정) -->
-    <form id="addProductForm" class="mb-5" enctype="multipart/form-data">
-        <!-- 상품명 입력 -->
-        <div class="mb-3">
-            <label for="newProductName" class="form-label">상품명</label>
-            <input type="text" id="newProductName" class="form-control" required />
-        </div>
+<hr/>
 
-        <!-- 가격 입력 -->
-        <div class="mb-3">
-            <label for="newProductPrice" class="form-label">가격</label>
-            <input type="number" id="newProductPrice" class="form-control" required />
-        </div>
+<h2 id="formTitle">새 상품 등록</h2>
+<form id="productForm" class="mb-5" enctype="multipart/form-data">
+<input type="hidden" id="productId">
+<div class="mb-3">
+<label for="productName" class="form-label">상품명</label>
+<input type="text" id="productName" class="form-control" required />
+</div>
 
-        <!-- 재고 입력 -->
-        <div class="mb-3">
-            <label for="newProductStock" class="form-label">재고</label>
-            <input type="number" id="newProductStock" class="form-control" required />
-        </div>
+<div class="mb-3">
+<label for="productPrice" class="form-label">가격</label>
+<input type="number" id="productPrice" class="form-control" required />
+</div>
 
-        <!-- 카테고리 선택 -->
-        <div class="mb-3">
-            <label for="newProductTag" class="form-label">카테고리</label>
-            <select id="newProductTag" class="form-select" required>
-                <option value="">카테고리를 선택하세요</option>
-                <option value="TOP">상의</option>
-                <option value="BOTTOM">하의</option>
-                <option value="OUTER">아우터</option>
-                <option value="DRESS">원피스</option>
-                <option value="SHOES">신발</option>
-                <option value="BAG">가방</option>
-                <option value="ACC">악세서리</option>
-                <option value="UNKNOWN">기타/알 수 없음</option>
-            </select>
-        </div>
+<div class="mb-3">
+<label for="productStock" class="form-label">재고</label>
+<input type="number" id="productStock" class="form-control" required />
+</div>
 
-        <!-- 이미지 파일 선택 -->
-        <div class="mb-3">
-            <label for="newProductThumnailImageFile" class="form-label">썸네일 이미지 파일</label>
-            <input type="file" id="newProductThumnailImageFile" class="form-control" />
-        </div>
+<div class="mb-3">
+<label for="productTag" class="form-label">카테고리</label>
+<select id="productTag" class="form-select" required>
+<option value="">카테고리를 선택하세요</option>
+<option value="TOP">상의</option>
+<option value="BOTTOM">하의</option>
+<option value="OUTER">아우터</option>
+<option value="DRESS">원피스</option>
+<option value="SHOES">신발</option>
+<option value="BAG">가방</option>
+<option value="ACC">악세서리</option>
+<option value="UNKNOWN">기타/알 수 없음</option>
+</select>
+</div>
 
-        <div class="mb-3">
-            <label for="newProductDetailImageFile" class="form-label">제품 상세 이미지 파일</label>
-            <input type="file" id="newProductDetailImageFile" class="form-control" multiple required/>
-        </div>
+<div class="row mb-3">
+<div class="col-md-6">
+<label for="productThumbnailImageFile" class="form-label">썸네일 이미지 파일</label>
+<input type="file" id="productThumbnailImageFile" class="form-control" accept="image/*" />
+<div class="image-preview-container mt-2" id="thumbnailPreview">
+<p>썸네일 이미지 미리보기</p>
+</div>
+</div>
+<div class="col-md-6">
+<label for="productDetailImageFiles" class="form-label">제품 상세 이미지 파일</label>
+<input type="file" id="productDetailImageFiles" class="form-control" multiple accept="image/*" />
+<div class="image-preview-container mt-2" id="detailImagesPreview">
+<p>상세 이미지 미리보기</p>
+</div>
+</div>
+</div>
 
-        <!-- 등록 버튼 -->
-        <button type="submit" class="btn btn-primary">상품 등록</button>
-    </form>
+<div class="form-buttons">
+<div>
+<button type="submit" id="submitButton" class="btn btn-primary">상품 등록</button>
+<button type="button" id="cancelEditButton" class="btn btn-secondary ms-2" style="display: none;">취소</button>
+<button type="button" id="toggleEditModeButton" class="btn btn-info ms-2" style="display: none;">상품 수정</button>
+</div>
+<button type="button" id="deleteProductButton" class="btn btn-danger" style="display: none;">상품 삭제</button>
+</div>
+</form>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // 상품 데이터 배열 초기화
     let products = [];
+    let currentProductId = null; // 현재 폼에 로드된 상품의 ID
+    let isEditMode = false; // 현재 폼이 수정 가능한 상태인지 여부
+    let imagesToDelete = new Set(); // 삭제할 이미지 파일명 저장
+
+    // UI 요소 참조
+    const productTableBody = document.getElementById('productTableBody');
+    const productForm = document.getElementById('productForm');
+    const formTitle = document.getElementById('formTitle');
+    const submitButton = document.getElementById('submitButton');
+    const cancelEditButton = document.getElementById('cancelEditButton');
+    const deleteProductButton = document.getElementById('deleteProductButton');
+    const toggleEditModeButton = document.getElementById('toggleEditModeButton');
+
+    const productIdInput = document.getElementById('productId');
+    const productNameInput = document.getElementById('productName');
+    const productPriceInput = document.getElementById('productPrice');
+    const productStockInput = document.getElementById('productStock');
+    const productTagSelect = document.getElementById('productTag');
+    const thumbnailFileInput = document.getElementById('productThumbnailImageFile');
+    const detailFilesInput = document.getElementById('productDetailImageFiles');
+    const thumbnailPreview = document.getElementById('thumbnailPreview');
+    const detailImagesPreview = document.getElementById('detailImagesPreview');
+
+    // 페이지 로드 시 상품 목록 가져오기
+    document.addEventListener('DOMContentLoaded', fetchProducts);
 
     // 서버에서 상품 목록을 불러오는 함수
     function fetchProducts() {
         fetch('/api/products')
             .then(res => {
                 if (!res.ok) throw new Error('상품 목록을 불러오는데 실패했습니다.');
-                return res.json();  // JSON 형태로 변환
+                return res.json();
             })
             .then(data => {
-                products = data;   // 전역 변수에 저장
-                renderProducts();  // 화면에 상품 목록 표시
+                products = data;
+                renderProducts();
             })
-            .catch(err => alert(err.message)); // 에러 발생 시 알림
+            .catch(err => alert(err.message));
     }
 
-    // 상품 목록을 테이블에 표시하는 함수
+    // 상품 목록을 테이블에 렌더링하는 함수
     function renderProducts() {
-        const tbody = document.getElementById('productTableBody');
-        tbody.innerHTML = '';  // 기존 내용 초기화
-
+        productTableBody.innerHTML = '';
         products.forEach(p => {
-            // 각 상품별 테이블 행 생성
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${p.productId}</td>
-                <td><input type="text" value="${p.productName}" id="name-${p.productId}" /></td>
-                <td><input type="number" value="${p.price}" id="price-${p.productId}" /></td>
-                <td><input type="number" value="${p.stock}" id="stock-${p.productId}" /></td>
-                <td>
-                    <select id="tag-${p.productId}" class="form-select">
-                        <option value="TOP" ${p.productTag === 'TOP' ? 'selected' : ''}>상의</option>
-                        <option value="BOTTOM" ${p.productTag === 'BOTTOM' ? 'selected' : ''}>하의</option>
-                        <option value="BOTTOM" ${p.productTag === 'OUTER' ? 'selected' : ''}>아우터</option>
-                        <option value="DRESS" ${p.productTag === 'DRESS' ? 'selected' : ''}>원피스</option>
-                        <option value="SHOES" ${p.productTag === 'SHOES' ? 'selected' : ''}>신발</option>
-                        <option value="BAG" ${p.productTag === 'BAG' ? 'selected' : ''}>가방</option>
-                        <option value="ACC" ${p.productTag === 'ACC' ? 'selected' : ''}>악세서리</option>
-                        <option value="UNKNOWN" ${p.productTag === 'UNKNOWN' ? 'selected' : ''}>기타/알 수 없음</option>
-                    </select>
-                </td>
-                <td><button onclick="updateProduct(${p.productId})" class="btn btn-sm btn-success">수정</button></td>
-                <td><button onclick="deleteProduct(${p.productId})" class="btn btn-sm btn-danger">삭제</button></td>
+                <td>${p.productName}</td>
+                <td>${p.price.toLocaleString()}원</td>
+                <td>${p.stock}</td>
+                <td>${p.productTag}</td>
             `;
-            tbody.appendChild(tr);  // 테이블에 행 추가
+            tr.addEventListener('click', () => loadProductDataToForm(p));
+            productTableBody.appendChild(tr);
         });
     }
 
-    // 특정 상품을 수정 요청하는 함수
-    function updateProduct(id) {
-        // 입력 폼에서 값 가져오기
-        const name = document.getElementById(`name-${id}`).value.trim();
-        const price = Number(document.getElementById(`price-${id}`).value);
-        const stock = Number(document.getElementById(`stock-${id}`).value);
-        const productTag = document.getElementById(`tag-${id}`).value;
+    // 상품 데이터를 폼에 로드하는 함수
+    function loadProductDataToForm(product) {
+        resetForm(); // 폼 초기화
+        currentProductId = product.productId;
+        isEditMode = false;
 
-        // 입력 검증
-        if (!name || price <= 0 || stock < 0 || !productTag) {
-            alert('모든 필드를 올바르게 입력해주세요.');
-            return;
-        }
+        formTitle.textContent = '상품 정보 조회';
+        productIdInput.value = product.productId;
+        productNameInput.value = product.productName;
+        productPriceInput.value = product.price;
+        productStockInput.value = product.stock;
+        productTagSelect.value = product.productTag;
 
-        // PUT 요청으로 상품 수정 API 호출
-        fetch(`/api/products/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productName: name, price: price, stock: stock, productTag: productTag })
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('상품 수정에 실패했습니다.');
-                alert('상품이 수정되었습니다.');
-                fetchProducts();  // 목록 갱신
-            })
-            .catch(err => alert(err.message));
+        // 이미지 미리보기 설정
+        updateImagePreview(thumbnailPreview, product.thumbnailUrl ? [product.thumbnailUrl] : [], false);
+        updateImagePreview(detailImagesPreview, product.detailImageUrls || [], false);
+
+        setFormEditable(false); // 폼을 읽기 전용으로 설정
+        updateButtonVisibility(true); // 수정/삭제 버튼 표시
+        submitButton.style.display = 'none'; // 등록/저장 버튼 숨김
     }
 
-    // 특정 상품 삭제 요청 함수
-    function deleteProduct(id) {
-        if (!confirm('정말 삭제하시겠습니까?')) return; // 삭제 확인
+    // 폼의 편집 가능 상태를 설정하는 함수
+    function setFormEditable(editable) {
+        isEditMode = editable;
+        productNameInput.readOnly = !editable;
+        productPriceInput.readOnly = !editable;
+        productStockInput.readOnly = !editable;
+        productTagSelect.disabled = !editable;
+        thumbnailFileInput.disabled = !editable;
+        detailFilesInput.disabled = !editable;
 
-        fetch(`/api/products/${id}`, { method: 'DELETE' })
+        // 이미지 삭제 버튼 활성화/비활성화
+        document.querySelectorAll('.delete-image').forEach(btn => {
+            btn.classList.toggle('disabled-delete', !editable);
+        });
+    }
+
+    // 버튼 가시성을 업데이트하는 함수
+    function updateButtonVisibility(isProductLoaded) {
+        cancelEditButton.style.display = isProductLoaded ? 'inline-block' : 'none';
+        deleteProductButton.style.display = isProductLoaded ? 'inline-block' : 'none';
+        toggleEditModeButton.style.display = isProductLoaded ? 'inline-block' : 'none';
+        submitButton.style.display = isProductLoaded ? (isEditMode ? 'inline-block' : 'none') : 'inline-block';
+
+        if (isProductLoaded) {
+            if (isEditMode) {
+                submitButton.textContent = '수정 저장';
+                toggleEditModeButton.style.display = 'none'; // 수정 모드에서는 '상품 수정' 버튼 숨김
+            } else {
+                toggleEditModeButton.textContent = '상품 수정';
+            }
+        } else {
+            submitButton.textContent = '상품 등록';
+        }
+    }
+
+    // '상품 수정' 버튼 클릭 이벤트
+    toggleEditModeButton.addEventListener('click', () => {
+        setFormEditable(true);
+        formTitle.textContent = '상품 정보 수정';
+        updateButtonVisibility(true);
+    });
+
+    // '취소' 버튼 클릭 이벤트
+    cancelEditButton.addEventListener('click', () => {
+        if (currentProductId) {
+            const product = products.find(p => p.productId === currentProductId);
+            loadProductDataToForm(product); // 수정 전 상태로 복원
+        } else {
+            resetForm(); // 새 상품 등록 모드로 전환
+        }
+    });
+
+    // 폼을 초기 상태로 리셋하는 함수
+    function resetForm() {
+        productForm.reset();
+        currentProductId = null;
+        isEditMode = false;
+        imagesToDelete.clear();
+        formTitle.textContent = '새 상품 등록';
+        thumbnailPreview.innerHTML = '<p>썸네일 이미지 미리보기</p>';
+        detailImagesPreview.innerHTML = '<p>상세 이미지 미리보기</p>';
+        setFormEditable(true);
+        updateButtonVisibility(false);
+    }
+
+    // 폼 제출 처리 (상품 등록 또는 수정)
+    productForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('productName', productNameInput.value);
+        formData.append('price', productPriceInput.value);
+        formData.append('stock', productStockInput.value);
+        formData.append('productTag', productTagSelect.value);
+
+        if (thumbnailFileInput.files[0]) {
+            formData.append('thumbnail', thumbnailFileInput.files[0]);
+        }
+        for (const file of detailFilesInput.files) {
+            formData.append('details', file);
+        }
+        if (imagesToDelete.size > 0) {
+            formData.append('deleteImages', JSON.stringify(Array.from(imagesToDelete)));
+        }
+
+        const url = currentProductId ? `/api/products/${currentProductId}` : '/api/products';
+        const method = currentProductId ? 'PUT' : 'POST';
+
+        fetch(url, { method: method, body: formData })
+            .then(res => {
+                if (!res.ok) throw new Error(`상품 ${currentProductId ? '수정' : '등록'}에 실패했습니다.`);
+                return res.json();
+            })
+            .then(data => {
+                alert(`상품이 성공적으로 ${currentProductId ? '수정' : '등록'}되었습니다.`);
+                resetForm();
+                fetchProducts();
+            })
+            .catch(err => alert(err.message));
+    });
+
+    // 상품 삭제 처리
+    deleteProductButton.addEventListener('click', () => {
+        if (!currentProductId || !confirm('정말 이 상품을 삭제하시겠습니까?')) return;
+
+        fetch(`/api/products/${currentProductId}`, { method: 'DELETE' })
             .then(res => {
                 if (!res.ok) throw new Error('상품 삭제에 실패했습니다.');
                 alert('상품이 삭제되었습니다.');
-                fetchProducts();  // 목록 갱신
+                resetForm();
+                fetchProducts();
             })
             .catch(err => alert(err.message));
-    }
-
-    // 새 상품 등록 폼 제출 처리
-    document.getElementById('addProductForm').addEventListener('submit', function(e) {
-        e.preventDefault();  // 폼 기본 제출 막기
-
-        // 입력값 가져오기
-        const name = document.getElementById('newProductName').value.trim();
-        const price = Number(document.getElementById('newProductPrice').value);
-        const stock = Number(document.getElementById('newProductStock').value);
-        const productTag = document.getElementById('newProductTag').value;
-        const thumbnailFile = document.getElementById('newProductThumnailImageFile').files[0];
-        const detailFiles = document.getElementById('newProductDetailImageFile').files;
-
-        // 입력 검증
-        if (!name || price <= 0 || stock < 0 || !productTag) {
-            alert('모든 필드를 올바르게 입력해주세요.');
-            return;
-        }
-        // FormData 구성
-        const formData = new FormData();
-        formData.append('productName', name);
-        formData.append('price', price);
-        formData.append('stock', stock);
-        formData.append('productTag', productTag);
-
-        if (thumbnailFile) {
-            formData.append('thumbnail', thumbnailFile);  // 썸네일 파일
-        }
-
-        for (let i = 0; i < detailFiles.length; i++) {
-            formData.append('details', detailFiles[i]);  // 상세 이미지 파일 여러 개
-        }
-
-        // 상품 등록 요청 (멀티파트)
-        fetch('/api/products', {
-            method: 'POST',
-            body: formData  // Content-Type 생략 → 브라우저가 multipart/form-data로 자동 설정
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('상품 등록에 실패했습니다.');
-                alert('상품이 등록되었습니다.');
-                document.getElementById('addProductForm').reset();
-                fetchProducts();  // 목록 갱신
-            })
-            .catch(err => alert(err.message));
-
-
-        //=======================================================================
-        // 이미지가 선택된 경우 업로드 후 등록, 아니면 바로 등록
-        // if (fileInput.files.length > 0) {
-        //     uploadImage(fileInput.files[0])
-        //         .then(imageUrl => {
-        //             registerProduct(name, price, stock, productTag, imageUrl);
-        //         })
-        //         .catch(err => alert(err.message));
-        // } else {
-        //     registerProduct(name, price, stock, productTag, null);
-        // }
-        //=========================================================================
     });
 
-    // 실제 상품 등록 API 호출 함수
-    function registerProduct(name, price, stock, productTag, imageUrl) {
-        fetch('/api/products', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productName: name, price, stock, productTag, image: imageUrl })
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('상품 등록에 실패했습니다.');
-                alert('상품이 등록되었습니다.');
-                document.getElementById('addProductForm').reset();  // 폼 초기화
-                fetchProducts();  // 목록 갱신
-            })
-            .catch(err => alert(err.message));
+    // 이미지 파일 선택 시 미리보기 업데이트
+    thumbnailFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            const urls = Array.from(e.target.files).map(file => URL.createObjectURL(file));
+            updateImagePreview(thumbnailPreview, urls, true, true);
+        }
+    });
+    detailFilesInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            const urls = Array.from(e.target.files).map(file => URL.createObjectURL(file));
+            updateImagePreview(detailImagesPreview, urls, true, true);
+        }
+    });
+
+    // 이미지 미리보기를 생성하고 업데이트하는 함수
+    function updateImagePreview(container, urls, isNew, isEditable = true) {
+        if (!isNew) container.innerHTML = ''; // 기존 미리보기 삭제 (새 파일 선택 시에는 놔둠)
+        if (urls.length === 0) {
+            container.innerHTML = `<p>${container.id === 'thumbnailPreview' ? '썸네일' : '상세'} 이미지가 없습니다.</p>`;
+            return;
+        }
+        if (container.querySelector('p')) container.innerHTML = ''; // '미리보기' 텍스트 제거
+
+        urls.forEach(url => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'image-preview-wrapper';
+            const img = document.createElement('img');
+            img.src = url;
+            wrapper.appendChild(img);
+
+            if (!isNew) { // 기존 이미지만 삭제 가능
+                const deleteBtn = document.createElement('span');
+                deleteBtn.className = 'delete-image';
+                deleteBtn.innerHTML = '&times;';
+                if (!isEditable) deleteBtn.classList.add('disabled-delete');
+
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 부모의 클릭 이벤트(loadProductDataToForm) 방지
+                    if (!isEditMode) return;
+                    const fileName = url.substring(url.lastIndexOf('/') + 1);
+                    imagesToDelete.add(fileName);
+                    wrapper.remove();
+                    if (container.childElementCount === 0) {
+                         container.innerHTML = `<p>${container.id === 'thumbnailPreview' ? '썸네일' : '상세'} 이미지가 없습니다.</p>`;
+                    }
+                });
+                wrapper.appendChild(deleteBtn);
+            }
+            container.appendChild(wrapper);
+        });
     }
 
-    // 이미지 파일을 서버로 업로드하는 함수 (비동기)
-    function uploadImage(file) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        return fetch('/api/files/upload', {
-            method: 'POST',
-            body: formData
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('이미지 업로드 실패');
-                return res.text(); // 서버가 반환한 이미지 URL을 텍스트로 받음
-            });
-    }
-
-    // 홈으로 이동하는 함수
-    function goHome() {
-        window.location.href = '/home';
-    }
-
-    // 로그아웃 처리 함수
+    // 홈으로 이동
+    function goHome() { window.location.href = '/home'; }
+    // 로그아웃
     function logout() {
-        localStorage.removeItem('currentUser');  // 로컬 스토리지에서 사용자 정보 삭제
+        localStorage.removeItem('currentUser');
         alert('로그아웃 되었습니다.');
         window.location.href = '/login';
     }
-
-    // 페이지가 로드될 때 상품 목록 자동 호출
-    // window.onload = fetchProducts;
-    // window.onload는 페이지 내 이미지 등 모든 리소스 로드 후 실행되므로 다소 늦습니다.
-    // DOM만 로드되면 실행하려면 아래처럼 바꾸는 게 일반적입니다.
-    document.addEventListener('DOMContentLoaded', fetchProducts);
-
 </script>
 
 </body>

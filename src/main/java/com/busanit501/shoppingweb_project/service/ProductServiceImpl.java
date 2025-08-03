@@ -9,6 +9,8 @@ import com.busanit501.shoppingweb_project.repository.ProductRepository;
 import com.busanit501.shoppingweb_project.repository.ProductImageRepository;
 import com.busanit501.shoppingweb_project.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -100,15 +102,67 @@ public class ProductServiceImpl implements ProductService {
 
     // 상품 수정 메서드 구현
     @Override
-    public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
-        log.info("ProductService에서 작업중 수정된 ProductDTO : " + productDTO.getProductName());
+    public void updateProductWithImages(Long productId, String productName, BigDecimal price, int stock, ProductCategory productTag,
+                                        MultipartFile thumbnail, List<MultipartFile> detailImages, String deleteImagesJson) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품이 없습니다. id=" + productId));
-        // 상품 정보 수정
+
+        // 1. 상품 기본 정보 업데이트
+        ProductDTO productDTO = ProductDTO.builder()
+                .productName(productName).price(price).stock(stock).productTag(productTag).build();
         product.changeTitleContent(productDTO);
-        log.info("ProductService에서 작업중 수정된 Product : " + product.getProductName());
-        Product updatedProduct = productRepository.save(product);
-        return Product.entityToDTO(updatedProduct);
+
+        // 2. 삭제할 이미지 처리
+        if (deleteImagesJson != null && !deleteImagesJson.isEmpty()) {
+            try {
+                List<String> deleteImageFileNames = new ObjectMapper().readValue(deleteImagesJson, new TypeReference<List<String>>() {});
+                productImageRepository.findByFileNameIn(deleteImageFileNames).forEach(image -> {
+                    fileUploadService.deleteFile(image.getFileName());
+                    product.getImageSet().remove(image);
+                    productImageRepository.delete(image);
+                });
+            } catch (IOException e) {
+                log.error("이미지 파일명 JSON 파싱 오류", e);
+            }
+        }
+
+        // 3. 새 썸네일 이미지 처리
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            // 기존 썸네일 삭제
+            product.getThumbnailImage().ifPresent(existingThumbnail -> {
+                fileUploadService.deleteFile(existingThumbnail.getFileName());
+                product.getImageSet().remove(existingThumbnail);
+                productImageRepository.delete(existingThumbnail);
+            });
+            // 새 썸네일 저장
+            try {
+                String savedFileName = fileUploadService.saveFile(thumbnail);
+                ProductImage thumbnailEntity = ProductImage.builder()
+                        .fileName(savedFileName).ord(0).thumbnail(true).build();
+                product.addImage(thumbnailEntity);
+            } catch (IOException e) {
+                log.error("썸네일 업로드 실패", e);
+            }
+        }
+
+        // 4. 새 상세 이미지 처리
+        if (detailImages != null && !detailImages.isEmpty()) {
+            int order = product.getImageSet().stream()
+                            .mapToInt(ProductImage::getOrd).max().orElse(0) + 1;
+            for (MultipartFile file : detailImages) {
+                if (!file.isEmpty()) {
+                    try {
+                        String savedFileName = fileUploadService.saveFile(file);
+                        ProductImage detailImageEntity = ProductImage.builder()
+                                .fileName(savedFileName).ord(order++).thumbnail(false).build();
+                        product.addImage(detailImageEntity);
+                    } catch (IOException e) {
+                        log.error("상세 이미지 업로드 실패", e);
+                    }
+                }
+            }
+        }
+        productRepository.save(product);
     }
 
     // 상품 삭제 메서드 구현

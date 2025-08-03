@@ -77,11 +77,19 @@ public ResponseEntity<?> createProduct(
     }
 
 
-    @PutMapping("/{productId}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long productId, @RequestBody ProductDTO requestDto) {
-        log.info("ProductControllerRestAPI에서 작업중 화면에서 가져온 데이터 확인중 : productId "+ productId+"productDTO : "+ requestDto.getProductName());
-        ProductDTO updatedProduct = productService.updateProduct(productId, requestDto);
-        return ResponseEntity.ok(updatedProduct);
+    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateProduct(
+            @PathVariable Long productId,
+            @RequestParam String productName,
+            @RequestParam BigDecimal price,
+            @RequestParam int stock,
+            @RequestParam ProductCategory productTag,
+            @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
+            @RequestParam(value = "details", required = false) List<MultipartFile> details,
+            @RequestParam(value = "deleteImages", required = false) String deleteImagesJson) {
+
+        productService.updateProductWithImages(productId, productName, price, stock, productTag, thumbnail, details, deleteImagesJson);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{productId}")
